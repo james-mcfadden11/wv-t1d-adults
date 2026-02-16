@@ -1,0 +1,8 @@
+<svg width="200" height="200" xmlns="http://www.w3.org/2000/svg">
+  <!-- Blue circle background -->
+  <circle cx="100" cy="100" r="95" fill="#2c5f8d"/>
+  
+  <!-- White text -->
+  <text x="100" y="80" font-family="Arial, sans-serif" font-size="48" font-weight="bold" fill="white" text-anchor="middle">WV</text>
+  <text x="100" y="130" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="white" text-anchor="middle">T1D</text>
+</svg>
