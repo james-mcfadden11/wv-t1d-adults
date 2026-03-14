@@ -79,19 +79,24 @@ The leadership photos, Tim's story photos, and past event flyers are already con
 ### Adding Events
 
 **Upcoming Events:**
-- Edit `upcoming-events.html`
-- Replace the placeholder section with event details:
+- Add the flyer image to `images/upcoming-events/`
+- Edit `upcoming-events.html` and add an event card with a link to the signup form:
 ```html
-<div class="event-card">
-    <h3>Spring Retreat 2025</h3>
-    <p><strong>Date:</strong> March 15-17, 2025</p>
-    <p><strong>Location:</strong> Camp Kno-Koma</p>
-    <p>Join us for a weekend of connection, activities, and fun!</p>
+<div class="event-card" style="text-align: center; max-width: 700px;">
+    <img src="images/upcoming-events/your-flyer.png" alt="Event Name">
+    <a href="YOUR_SIGNUP_URL" target="_blank" rel="noopener noreferrer" class="cta-button" style="margin-top: 2rem; background: var(--primary-blue); color: white;">Sign Up</a>
 </div>
 ```
 
 **Past Events:**
-- Edit `past-events.html` similarly
+- Add the flyer image to `images/past-events/`
+- Edit `past-events.html` and add an event card at the top of the list:
+```html
+<div class="event-card">
+    <img src="images/past-events/your-flyer.png" alt="Event Name">
+</div>
+```
+- For landscape (wide) flyers, add `style="max-width: 700px;"` to the card so it displays at a readable size
 
 ### Changing Colors
 
