@@ -37,7 +37,17 @@ The leadership photos, Tim's story photos, and past event flyers are already con
 1. Open `index.html` in your web browser
 2. Click through the navigation to see all pages
 
-### Deploy to Web
+### Deployment
+
+**Live site:** https://wvt1dadults.org
+
+**Host:** Netlify (free tier)
+
+**Domain registrar/DNS:** SiteGround (nameservers: ns1.siteground.net, ns2.siteground.net)
+
+To update the site, drag and drop the updated files (or the whole folder) into the Netlify dashboard. Changes go live immediately.
+
+### Deploy to Web (first-time options)
 
 #### Option 1: Netlify (Recommended - FREE)
 1. Sign up for a free account at [netlify.com](https://netlify.com)
