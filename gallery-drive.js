@@ -73,7 +73,13 @@
             var rootImages = results[1];
 
             subfolders.sort(function (a, b) {
-                return b.name.localeCompare(a.name, undefined, { numeric: true });
+                var yearA = /^\d+$/.test(a.name) ? parseInt(a.name, 10) : null;
+                var yearB = /^\d+$/.test(b.name) ? parseInt(b.name, 10) : null;
+
+                if (yearA !== null && yearB !== null) return yearB - yearA;
+                if (yearA !== null) return -1;
+                if (yearB !== null) return 1;
+                return a.name.localeCompare(b.name);
             });
 
             return Promise.all(subfolders.map(function (folder) {
