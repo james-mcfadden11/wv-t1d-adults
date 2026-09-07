@@ -2,6 +2,12 @@
 
 Professional website for the WV T1D Adults nonprofit organization.
 
+## Documentation
+
+Start with [`CLAUDE.md`](CLAUDE.md) for an overview of the project and pointers to everything else. Deeper reference docs live in [`docs/`](docs/):
+- [`docs/PROJECT_SUMMARY.md`](docs/PROJECT_SUMMARY.md) — full technical rundown of the site (structure, pages, design system, gallery internals)
+- [`docs/TODO.md`](docs/TODO.md) — current to-do list and in-progress work
+
 ## Files Included
 
 - `index.html` - Home page
@@ -9,27 +15,24 @@ Professional website for the WV T1D Adults nonprofit organization.
 - `connect.html` - How to Connect page with social media links
 - `upcoming-events.html` - Upcoming Events page
 - `past-events.html` - Past Events page (now shows your event flyers)
-- `gallery.html` - Photo Gallery page
+- `gallery.html` - Photo Gallery page (photos load live from Google Drive)
 - `tims-story.html` - Tim's Story page (now shows Tim's photos)
 - `styles.css` - All styling for the website
 - `script.js` - JavaScript for mobile menu and interactions
-- `generate-gallery.py` - Python script to auto-generate gallery with all 134 photos
+- `gallery-drive.js` - Fetches photos from the Google Drive API and renders the gallery grid
 
-## IMPORTANT: Generating the Photo Gallery
+## IMPORTANT: Managing the Photo Gallery
 
-Your gallery has 134 photos! To automatically add them all to gallery.html:
+The gallery no longer stores photos in this repo. Photos live in a shared Google Drive folder and `gallery-drive.js` fetches them live via the Google Drive API — there's no build step, no script to run.
 
-**Option 1: Run the Python script (Easiest)**
-1. Make sure Python is installed on your computer
-2. Place all 134 gallery photos in `images/gallery/` folder
-3. Open terminal/command prompt in the wvt1d-website folder
-4. Run: `python generate-gallery.py` (or `python3 generate-gallery.py`)
-5. The script will automatically create gallery.html with all your photos!
+**To add or remove gallery photos:**
+1. Open the shared Google Drive gallery folder
+2. Upload new photos into the current year's subfolder (create a new year subfolder, named just the year e.g. `2027`, when a new year starts), or delete photos to remove them
+3. That's it — the site reflects the folder's current contents on the next page load
 
-**Option 2: Manual** (Not recommended for 134 photos)
-- You can manually edit gallery.html, but with 134 photos this is tedious
+**Do not** change the Drive folder's sharing setting (must stay "Anyone with the link — Viewer") or the gallery will silently stop showing photos for visitors. See [`docs/PROJECT_SUMMARY.md`](docs/PROJECT_SUMMARY.md) for the full technical details (API key restrictions, folder-grouping behavior, etc).
 
-The leadership photos, Tim's story photos, and past event flyers are already configured!
+The leadership photos, Tim's story photos, and past event flyers are configured directly in their HTML pages (not via Drive).
 
 ## How to Use
 
@@ -78,9 +81,7 @@ To update the site, drag and drop the updated files (or the whole folder) into t
 - To this: `<img src="images/maddie.jpg" alt="Maddie" style="width: 100%; height: 300px; object-fit: cover;">`
 
 **Photo Gallery:**
-- In `gallery.html`, replace the placeholders
-- Change: `<div class="gallery-placeholder">Photo 1</div>`
-- To: `<img src="images/retreat1.jpg" alt="Retreat photo" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;">`
+- Not edited in HTML at all — upload/remove photos directly in the shared Google Drive gallery folder (see "Managing the Photo Gallery" above)
 
 **Tim's Story:**
 - In `tims-story.html`, replace the photo placeholder
@@ -140,12 +141,10 @@ wvt1d-website/
     ├── maddie.jpg
     ├── emmy.jpg
     ├── tammy.jpg
-    ├── tim.jpg
-    └── gallery/
-        ├── retreat1.jpg
-        ├── retreat2.jpg
-        └── ...
+    └── tim.jpg
 ```
+
+Note: gallery photos are not part of this folder — they live in the shared Google Drive folder (see "Managing the Photo Gallery" above).
 
 ## Mobile Responsive
 

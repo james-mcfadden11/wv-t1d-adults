@@ -19,8 +19,9 @@ The organization is sponsored by **Ties for Tim** and **Camp Kno-Koma**.
 | Icons | Font Awesome 6.5 (used only on `connect.html`) |
 | Hosting | Netlify (drag-and-drop deploy — no CI/CD pipeline) |
 | Domain/DNS | SiteGround (ns1/ns2.siteground.net) |
+| Photo gallery | Google Drive (photos live in a shared Drive folder, not the repo), fetched client-side via the Google Drive API |
 
-There is no backend, database, build system, or npm/package.json. Updates are deployed by dragging the folder into Netlify's dashboard.
+There is no backend, database, build system, or npm/package.json. Updates are deployed by dragging the folder into Netlify's dashboard. The one exception to "everything lives in the repo" is the photo gallery, which pulls from Google Drive at page-load time (see Photo Gallery section below).
 
 ---
 
@@ -33,18 +34,20 @@ wv-t1d-adults/
 ├── connect.html            # Social media links + email
 ├── upcoming-events.html    # Current event flyers + signup links
 ├── past-events.html        # Archive of past event flyers
-├── gallery.html            # Photo gallery (auto-generated)
+├── gallery.html            # Photo gallery (photos loaded live from Google Drive)
 ├── tims-story.html         # Tim's memorial/story page
 ├── styles.css              # All site styles
 ├── script.js               # Mobile nav + hero carousel logic
-├── generate-gallery.py     # Script to rebuild gallery.html from images/
-├── generate-gallery.sh     # Shell wrapper for the Python script
+├── gallery-drive.js        # Fetches photos from Google Drive API and renders gallery.html's grid
 ├── favicon.svg             # Favicon (SVG)
+├── CLAUDE.md               # Short project overview, points here and to docs/TODO.md
+├── docs/
+│   ├── PROJECT_SUMMARY.md  # This file
+│   └── TODO.md             # Current to-do list
 └── images/
     ├── WVT1D.PNG           # Logo (used in nav + favicon fallback)
     ├── logo.svg            # SVG logo variant
     ├── about-us/           # Leader photos (Maddie, Emmy, Tammy)
-    ├── gallery/            # 132 community photos (PNG/JPG, hash-named)
     ├── hero/               # Hero carousel images (2023–2025)
     ├── past-events/        # Past event flyers (10 images)
     ├── tims-story/         # Tim's photo + story flyer
@@ -69,7 +72,7 @@ wv-t1d-adults/
   - **Tammy** — attorney at Goodwin & Goodwin LLP, T1D advocate, son diagnosed at 11
 
 ### How to Connect (`connect.html`)
-- Cards linking to: Email, Facebook Page, Facebook Group, Instagram (@wvt1d_adults), WhatsApp group
+- Cards linking to: Email, Facebook Page, Facebook Group, Instagram (@wvt1d_adults), WhatsApp group, and a "Join our mailing list" card (Microsoft Forms link)
 
 ### Upcoming Events (`upcoming-events.html`)
 - Currently shows the **2026 Summer Retreat** flyer with a Microsoft Forms signup link
@@ -81,9 +84,13 @@ wv-t1d-adults/
   - Retreat 2023, Meet & Greet (x2)
 
 ### Photo Gallery (`gallery.html`)
-- Responsive CSS grid of **132 community photos**
-- Images use `loading="lazy"` for performance
-- **Regenerated** by running `python3 generate-gallery.py` — the script scans `images/gallery/` and rewrites `gallery.html` automatically
+- Photos are **not stored in the repo** — `gallery-drive.js` fetches them live from a shared Google Drive folder via the Google Drive API (browser-side `fetch`, no backend) and renders them into a CSS-columns masonry grid (`.gallery-grid`/`.gallery-item` in `styles.css`), so portrait and landscape photos both show at full size with no cropping.
+- **Folder structure = display grouping:** the Drive folder can contain year subfolders (e.g. `2026`, `2025`, `pre-2025`); each becomes its own group of photos, newest subfolder first, with no visible header — just ordering. Subfolders with a plain numeric (year) name sort newest-first among themselves; any non-numeric-named subfolder (e.g. `pre-2025`, for undated older photos) always sorts after all numeric years, regardless of its name. Any photos left loose in the root folder are grouped after all named subfolders. No mention of "Google Drive" or any link to Drive appears on the page itself — it's presented as just "the gallery."
+- All photos have been migrated: `images/gallery/` (the old static repo folder) has been deleted. Current Drive subfolders: `2026`, `2025`, `pre-2025`.
+- **Dependencies to know about** (both silent-failure points — if broken, the grid shows "Unable to load photos right now"):
+  1. The Drive folder's general access must stay "Anyone with the link — Viewer."
+  2. The Google Cloud API key hardcoded in `gallery-drive.js` must stay enabled and restricted to the Drive API + HTTP referrers `https://wvt1dadults.org/*` (and `https://www.wvt1dadults.org/*`). It's safe to have in client-side code specifically because of that restriction.
+- **Gotcha:** every `<img>` sets `referrerpolicy="no-referrer"` — without it, Google's thumbnail CDN (`lh3.googleusercontent.com`) rejects the image request because browsers send a `Referer` header by default. Don't remove that attribute.
 
 ### Tim's Story (`tims-story.html`)
 - Side-by-side layout: Tim's photo + a story flyer image
@@ -131,8 +138,8 @@ Mobile breakpoint: `max-width: 768px` — nav collapses to hamburger, grids go s
 2. Add a card at the top of the `.events-grid` in `past-events.html`
 
 **Add gallery photos:**
-1. Drop images into `images/gallery/`
-2. Run `python3 generate-gallery.py` — it rewrites `gallery.html` automatically
+1. Upload the photo(s) into the shared Google Drive gallery folder — into the current year's subfolder if one exists, or create a new year subfolder (name it just the year, e.g. `2027`) when a new year starts
+2. That's it — no rebuild step. The site fetches the folder's contents live, so new photos appear on next page load. Just don't change the folder's sharing setting (must stay "Anyone with the link — Viewer") or the gallery breaks for visitors
 
 **Deploy any change:**
 - Drag-and-drop the updated folder (or changed files) into the Netlify dashboard at netlify.com
@@ -144,9 +151,8 @@ Mobile breakpoint: `max-width: 768px` — nav collapses to hamburger, grids go s
 
 ## Known / Notable Details
 
-- Gallery image filenames are MD5-style hashes (e.g., `00af3757...png`) — no human-readable names
-- One gallery file has a ` copy` suffix (`296533e4... copy.jpg`) — minor inconsistency, won't break anything
-- The `generate-gallery.py` script's nav template is slightly outdated (logo is text-only, missing the `<img>` tag and favicon link) — if regenerating, the output should be spot-checked against the other pages
-- Copyright footer says "2025" across all pages — will need updating annually
+- Copyright footer says "2026" across all pages — will need updating annually (bump the year in the `<footer>` block on all 7 pages)
+- Footer on every page also has a "Join Our Mailing List" button (`.footer-mailing-list`) linking to a Microsoft Forms signup
 - No contact form backend — the Connect page links to Gmail directly
 - No analytics or tracking scripts present
+- The Google Drive API key in `gallery-drive.js` is intentionally visible in client-side source — it's restricted (Drive API only, HTTP referrer locked to this domain) so exposing it is not a security issue, but don't remove the referrer restriction in Google Cloud Console
